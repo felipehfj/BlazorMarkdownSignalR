@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMarkdownSignalR", "BlazorMarkdownSignalR\BlazorMarkdownSignalR\BlazorMarkdownSignalR.csproj", "{E3B6BE98-B507-4027-A22B-48CD9C0B0744}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMarkdownSignalR.Client", "BlazorMarkdownSignalR\BlazorMarkdownSignalR.Client\BlazorMarkdownSignalR.Client.csproj", "{E916C707-F94C-4BD2-8430-7FCF6E5F4E8B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3B6BE98-B507-4027-A22B-48CD9C0B0744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3B6BE98-B507-4027-A22B-48CD9C0B0744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3B6BE98-B507-4027-A22B-48CD9C0B0744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3B6BE98-B507-4027-A22B-48CD9C0B0744}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E916C707-F94C-4BD2-8430-7FCF6E5F4E8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E916C707-F94C-4BD2-8430-7FCF6E5F4E8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E916C707-F94C-4BD2-8430-7FCF6E5F4E8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E916C707-F94C-4BD2-8430-7FCF6E5F4E8B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DA7D4CD5-3894-4FD0-AF71-06A89EC84DDC}
+	EndGlobalSection
+EndGlobal
