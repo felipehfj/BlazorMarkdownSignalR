@@ -1,0 +1,84 @@
+﻿@page "/editor"
+@rendermode InteractiveAuto
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.SignalR.Client
+
+<PageTitle>Editor MD</PageTitle>
+
+<h1>Markdown Editor</h1>
+
+
+<div class="col-md-12">
+    <MarkdownEditor @bind-Value="@markdownValue"
+                    ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
+                    SpellChecker="false"
+                    @ref="MarkdownEditor" />
+
+    <hr />
+
+    <h3>Result</h3>
+    @((MarkupString)markdownHtml)
+</div>
+
+@code {
+    private HubConnection? hubConnection;
+    private List<string> messages = new List<string>();
+    private string? userInput;
+    private string? messageInput;
+
+    MarkdownEditor MarkdownEditor = new();
+    string markdownValue = string.Empty;
+    string markdownHtml = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        hubConnection = new HubConnectionBuilder()
+           .WithUrl(Navigation.ToAbsoluteUri("/editorhub"))
+           .Build();
+
+        hubConnection.On<string>("ReceiveMarkdown", (message) =>
+        {
+            var encodedMsg = $"{message}";
+            messages.Add(encodedMsg);
+            ChangeText(encodedMsg).Wait();
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+
+    }
+
+    Task OnMarkdownValueChanged(string value)
+    {
+        return Task.CompletedTask;
+    }
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+
+        if (hubConnection is not null)
+        {
+            hubConnection.SendAsync("SendMarkdown", markdownValue);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    async Task ChangeText(string text)
+    {
+        await MarkdownEditor.SetValueAsync(messages.Last()??"");
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}
