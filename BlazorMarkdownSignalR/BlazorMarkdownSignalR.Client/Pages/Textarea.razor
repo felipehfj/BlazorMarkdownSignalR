@@ -1,0 +1,60 @@
+﻿@page "/textarea"
+@rendermode InteractiveAuto
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.SignalR.Client
+
+<PageTitle>Textarea</PageTitle>
+
+<h1>Markdown Editor</h1>
+
+<div class="col-md-12">
+    <h3>Result</h3>
+    <textarea @bind="TextAreaStr" @oninput="Onchange" class="form-control" rows="10"></textarea>
+</div>
+
+@code {
+    private HubConnection? hubConnection;
+    private List<string> messages = new List<string>();
+
+
+    public string TextAreaStr { get; set; } = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        hubConnection = new HubConnectionBuilder()
+           .WithUrl(Navigation.ToAbsoluteUri("/editorhub"))
+           .Build();
+
+        hubConnection.On<string>("ReceiveMarkdown", (message) =>
+        {
+            var encodedMsg = $"{message}";
+            messages.Add(encodedMsg);
+            TextAreaStr = messages.Last();
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+
+    }
+
+    public void Onchange(ChangeEventArgs args)
+    {
+        var l = args.Value;
+        if (hubConnection is not null)
+        {
+            hubConnection.SendAsync("SendMarkdown", args.Value);
+        }
+    }
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}
