@@ -22,11 +22,9 @@
 
 @code {
     private HubConnection? hubConnection;
-    private List<string> messages = new List<string>();
-    private string? userInput;
-    private string? messageInput;
+    private List<string> messages = new List<string>();        
 
-    MarkdownEditor MarkdownEditor = new();
+    MarkdownEditor MarkdownEditor=new();
     string markdownValue = string.Empty;
     string markdownHtml = string.Empty;
 
@@ -41,13 +39,17 @@
         {
             var encodedMsg = $"{message}";
             messages.Add(encodedMsg);
-            ChangeText(encodedMsg).Wait();
+            markdownValue = messages.Last();
+            Task.Delay(2);
+            MarkdownEditor.SetValueAsync(markdownValue).Wait();
             InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
 
     }
+
+  
 
     Task OnMarkdownValueChanged(string value)
     {
@@ -56,23 +58,15 @@
 
     Task OnMarkdownValueHTMLChanged(string value)
     {
-        markdownHtml = value;
-
+        markdownHtml = value;        
         if (hubConnection is not null)
         {
             hubConnection.SendAsync("SendMarkdown", markdownValue);
         }
-
         return Task.CompletedTask;
     }
 
-    async Task ChangeText(string text)
-    {
-        await MarkdownEditor.SetValueAsync(messages.Last()??"");
-    }
-
-    public bool IsConnected =>
-        hubConnection?.State == HubConnectionState.Connected;
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
     public async ValueTask DisposeAsync()
     {

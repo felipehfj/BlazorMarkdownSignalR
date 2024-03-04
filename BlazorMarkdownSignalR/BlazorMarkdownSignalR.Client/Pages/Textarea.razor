@@ -5,7 +5,7 @@
 
 <PageTitle>Textarea</PageTitle>
 
-<h1>Markdown Editor</h1>
+<h1>TextArea Editor</h1>
 
 <div class="col-md-12">
     <h3>Result</h3>
@@ -27,7 +27,7 @@
            .WithUrl(Navigation.ToAbsoluteUri("/editorhub"))
            .Build();
 
-        hubConnection.On<string>("ReceiveMarkdown", (message) =>
+        hubConnection.On<string>("ReceiveTextArea", (message) =>
         {
             var encodedMsg = $"{message}";
             messages.Add(encodedMsg);
@@ -44,7 +44,7 @@
         var l = args.Value;
         if (hubConnection is not null)
         {
-            hubConnection.SendAsync("SendMarkdown", args.Value);
+            hubConnection.SendAsync("SendTextArea", args.Value);
         }
     }
 
