@@ -12,25 +12,32 @@
     <MarkdownEditor @bind-Value="@markdownValue"
                     ValueHTMLChanged="@OnMarkdownValueHTMLChanged"
                     SpellChecker="false"
-                    @ref="MarkdownEditor" />
+                    @ref="Markdown" />
 
     <hr />
 
     <h3>Result</h3>
     @((MarkupString)markdownHtml)
+
+    <div>
+        <ul>
+            @foreach (var item in messages)
+            {
+                <li>@item</li>
+            }
+        </ul>
+    </div>
 </div>
 
 @code {
     private HubConnection? hubConnection;
-    private List<string> messages = new List<string>();        
-
-    MarkdownEditor MarkdownEditor=new();
+    private List<string> messages = new List<string>(){""};
+    MarkdownEditor Markdown=new();
     string markdownValue = string.Empty;
     string markdownHtml = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-
         hubConnection = new HubConnectionBuilder()
            .WithUrl(Navigation.ToAbsoluteUri("/editorhub"))
            .Build();
@@ -38,18 +45,19 @@
         hubConnection.On<string>("ReceiveMarkdown", (message) =>
         {
             var encodedMsg = $"{message}";
-            messages.Add(encodedMsg);
-            markdownValue = messages.Last();
-            Task.Delay(2);
-            MarkdownEditor.SetValueAsync(markdownValue).Wait();
+            messages.Add(encodedMsg);            
             InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
-
     }
 
-  
+
+    public async Task Update()
+    {
+        await Markdown.SetValueAsync(messages.Last()??"");
+        await InvokeAsync(StateHasChanged);
+    }
 
     Task OnMarkdownValueChanged(string value)
     {
@@ -58,7 +66,7 @@
 
     Task OnMarkdownValueHTMLChanged(string value)
     {
-        markdownHtml = value;        
+        markdownHtml = value;
         if (hubConnection is not null)
         {
             hubConnection.SendAsync("SendMarkdown", markdownValue);
@@ -68,7 +76,7 @@
 
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
-    public async ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync() 
     {
         if (hubConnection is not null)
         {
